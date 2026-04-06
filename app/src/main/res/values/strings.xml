@@ -35,6 +35,16 @@
     <string name="delete">Delete</string>
     <!-- Setting labels on Set alarm screen: Duplicate -->
     <string name="duplicate">Duplicate</string>
+    <!-- Label for lock alarm toggle -->
+    <string name="alarm_lock">Lock</string>
+    <!-- Content description for the lock alarm button when alarm is locked -->
+    <string name="alarm_locked_description">Alarm is locked. Tap to unlock.</string>
+    <!-- Content description for the lock alarm button when alarm is unlocked -->
+    <string name="alarm_unlocked_description">Alarm is unlocked. Tap to lock.</string>
+    <!-- Toast message shown when user tries to toggle or delete a locked alarm -->
+    <string name="alarm_is_locked_toast">Alarm is locked. Tap the lock icon to unlock.</string>
+    <!-- Confirmation dialog message when deleting a locked alarm -->
+    <string name="locked_alarm_delete_confirmation">This alarm is locked. Unlock and delete?</string>
     <!-- Dialog label to choose a new background image. -->
     <string name="label_new_image">New image</string>
     <!-- Dialog label to choose a new font. -->

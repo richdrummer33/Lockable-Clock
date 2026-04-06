@@ -129,7 +129,8 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
             SNOOZE_DURATION,
             MISSED_ALARM_REPEAT_LIMIT,
             CRESCENDO_DURATION,
-            ALARM_VOLUME
+            ALARM_VOLUME,
+            LOCKED
     };
     private static final String[] QUERY_ALARMS_WITH_INSTANCES_COLUMNS = {
             ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + _ID,
@@ -151,6 +152,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
             ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + MISSED_ALARM_REPEAT_LIMIT,
             ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + CRESCENDO_DURATION,
             ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + ALARM_VOLUME,
+            ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + LOCKED,
             ClockDatabaseHelper.INSTANCES_TABLE_NAME + "." + ClockContract.InstancesColumns.ALARM_STATE,
             ClockDatabaseHelper.INSTANCES_TABLE_NAME + "." + ClockContract.InstancesColumns._ID,
             ClockDatabaseHelper.INSTANCES_TABLE_NAME + "." + ClockContract.InstancesColumns.YEAR,
@@ -192,26 +194,27 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
     private static final int MISSED_ALARM_REPEAT_LIMIT_INDEX = 16;
     private static final int CRESCENDO_DURATION_INDEX = 17;
     private static final int ALARM_VOLUME_INDEX = 18;
+    private static final int LOCKED_INDEX = 19;
 
-    private static final int INSTANCE_STATE_INDEX = 19;
-    public static final int INSTANCE_ID_INDEX = 20;
-    public static final int INSTANCE_YEAR_INDEX = 21;
-    public static final int INSTANCE_MONTH_INDEX = 22;
-    public static final int INSTANCE_DAY_INDEX = 23;
-    public static final int INSTANCE_HOUR_INDEX = 24;
-    public static final int INSTANCE_MINUTE_INDEX = 25;
-    public static final int INSTANCE_LABEL_INDEX = 26;
-    public static final int INSTANCE_VIBRATE_INDEX = 27;
-    public static final int INSTANCE_VIBRATION_PATTERN_INDEX = 28;
-    public static final int INSTANCE_FLASH_INDEX = 29;
-    public static final int INSTANCE_AUTO_SILENCE_DURATION_INDEX = 30;
-    public static final int INSTANCE_SNOOZE_DURATION_INDEX = 31;
-    public static final int INSTANCE_MISSED_ALARM_REPEAT_COUNT_INDEX = 32;
-    public static final int INSTANCE_MISSED_ALARM_REPEAT_LIMIT_INDEX = 33;
-    public static final int INSTANCE_CRESCENDO_DURATION_INDEX = 34;
-    public static final int INSTANCE_ALARM_VOLUME_INDEX = 35;
+    private static final int INSTANCE_STATE_INDEX = 20;
+    public static final int INSTANCE_ID_INDEX = 21;
+    public static final int INSTANCE_YEAR_INDEX = 22;
+    public static final int INSTANCE_MONTH_INDEX = 23;
+    public static final int INSTANCE_DAY_INDEX = 24;
+    public static final int INSTANCE_HOUR_INDEX = 25;
+    public static final int INSTANCE_MINUTE_INDEX = 26;
+    public static final int INSTANCE_LABEL_INDEX = 27;
+    public static final int INSTANCE_VIBRATE_INDEX = 28;
+    public static final int INSTANCE_VIBRATION_PATTERN_INDEX = 29;
+    public static final int INSTANCE_FLASH_INDEX = 30;
+    public static final int INSTANCE_AUTO_SILENCE_DURATION_INDEX = 31;
+    public static final int INSTANCE_SNOOZE_DURATION_INDEX = 32;
+    public static final int INSTANCE_MISSED_ALARM_REPEAT_COUNT_INDEX = 33;
+    public static final int INSTANCE_MISSED_ALARM_REPEAT_LIMIT_INDEX = 34;
+    public static final int INSTANCE_CRESCENDO_DURATION_INDEX = 35;
+    public static final int INSTANCE_ALARM_VOLUME_INDEX = 36;
 
-    private static final int COLUMN_COUNT = ALARM_VOLUME_INDEX + 1;
+    private static final int COLUMN_COUNT = LOCKED_INDEX + 1;
     private static final int ALARM_JOIN_INSTANCE_COLUMN_COUNT = INSTANCE_ALARM_VOLUME_INDEX + 1;
     // Public fields
     public long id;
@@ -234,6 +237,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
     public int crescendoDuration;
     // Alarm volume level in steps; not a percentage
     public int alarmVolume;
+    public boolean locked;
     public int instanceState;
 
     // Creates a default alarm at the current time.
@@ -264,9 +268,8 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         this.missedAlarmRepeatLimit = Integer.parseInt(DEFAULT_MISSED_ALARM_REPEAT_LIMIT);
         this.crescendoDuration = DEFAULT_VOLUME_CRESCENDO_DURATION;
         this.alarmVolume = DEFAULT_ALARM_VOLUME;
+        this.locked = false;
     }
-
-    // Used to backup/restore the alarm
     public Alarm(long id, boolean enabled, int year, int month, int day, int hour, int minutes,
                  boolean vibrate, String vibrationPattern, boolean flash, Weekdays daysOfWeek,
                  String label, String alert, boolean deleteAfterUse, int autoSilenceDuration,
@@ -292,6 +295,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         this.missedAlarmRepeatLimit = missedAlarmRepeatLimit;
         this.crescendoDuration = crescendoDuration;
         this.alarmVolume = alarmVolume;
+        this.locked = false;
     }
 
     public Alarm(Cursor c) {
@@ -313,6 +317,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         missedAlarmRepeatLimit = c.getInt(MISSED_ALARM_REPEAT_LIMIT_INDEX);
         crescendoDuration = c.getInt(CRESCENDO_DURATION_INDEX);
         alarmVolume = c.getInt(ALARM_VOLUME_INDEX);
+        locked = c.getColumnCount() > LOCKED_INDEX && c.getInt(LOCKED_INDEX) == 1;
 
         if (c.getColumnCount() == ALARM_JOIN_INSTANCE_COLUMN_COUNT) {
             instanceState = c.getInt(INSTANCE_STATE_INDEX);
@@ -349,6 +354,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         missedAlarmRepeatLimit = p.readInt();
         crescendoDuration = p.readInt();
         alarmVolume = p.readInt();
+        locked = p.readInt() == 1;
     }
 
     public ContentValues createContentValues() {
@@ -374,6 +380,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         values.put(MISSED_ALARM_REPEAT_LIMIT, missedAlarmRepeatLimit);
         values.put(CRESCENDO_DURATION, crescendoDuration);
         values.put(ALARM_VOLUME, alarmVolume);
+        values.put(LOCKED, locked ? 1 : 0);
         if (alert == null) {
             // We want to put null, so default alarm changes
             values.putNull(RINGTONE);
@@ -404,6 +411,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         p.writeInt(missedAlarmRepeatLimit);
         p.writeInt(crescendoDuration);
         p.writeInt(alarmVolume);
+        p.writeInt(locked ? 1 : 0);
     }
 
     public int describeContents() {

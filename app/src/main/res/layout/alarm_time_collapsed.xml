@@ -91,6 +91,21 @@
         app:layout_constraintBottom_toBottomOf="@id/days_of_week"
         tools:ignore="TouchTargetSizeCheck" />
 
+    <ImageView
+        android:id="@+id/lock_indicator"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/ic_lock"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/alarm_locked_description"
+        android:visibility="gone"
+        app:tint="?attr/colorOnSurfaceVariant"
+        app:layout_constraintEnd_toStartOf="@id/onoff"
+        app:layout_constraintTop_toTopOf="@id/onoff"
+        app:layout_constraintBottom_toBottomOf="@id/onoff"
+        tools:visibility="visible" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/preemptive_dismiss_button"
         android:layout_width="wrap_content"

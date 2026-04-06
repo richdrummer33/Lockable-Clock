@@ -181,6 +181,12 @@ public final class ClockContract {
          * <p>Type: INTEGER</p>
          */
         String DELETE_AFTER_USE = "delete_after_use";
+
+        /**
+         * True if alarm is locked (prevents accidental disabling or deletion).
+         * <p>Type: BOOLEAN</p>
+         */
+        String LOCKED = "locked";
     }
 
     /**

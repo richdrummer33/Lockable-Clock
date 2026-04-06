@@ -231,13 +231,38 @@ public final class AlarmTimeClickHandler implements OnTimeSetListener {
     }
 
     public void onDeleteClicked(AlarmItemHolder itemHolder) {
+        final Alarm alarm = itemHolder.item;
+        if (alarm.locked) {
+            new androidx.appcompat.app.AlertDialog.Builder(mContext)
+                    .setMessage(R.string.locked_alarm_delete_confirmation)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        alarm.locked = false;
+                        if (mFragment instanceof AlarmClockFragment) {
+                            ((AlarmClockFragment) mFragment).removeItem(itemHolder);
+                        }
+                        Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
+                        mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
+                        LOGGER.d("Deleting locked alarm after confirmation.");
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+            return;
+        }
         if (mFragment instanceof AlarmClockFragment) {
             ((AlarmClockFragment) mFragment).removeItem(itemHolder);
         }
-        final Alarm alarm = itemHolder.item;
         Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
         mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
         LOGGER.d("Deleting alarm.");
+    }
+
+    public void onLockClicked(Alarm alarm) {
+        alarm.locked = !alarm.locked;
+        Events.sendAlarmEvent(alarm.locked ? R.string.action_lock : R.string.action_unlock,
+                R.string.label_deskclock);
+        mAlarmUpdateHandler.asyncUpdateAlarm(alarm, false, true);
+        Utils.setVibrationTime(mContext, 50);
+        LOGGER.d("Toggling alarm lock to " + alarm.locked);
     }
 
     public void onDuplicateClicked(AlarmItemHolder itemHolder) {

@@ -251,6 +251,18 @@ public final class AlarmClockFragment extends DeskClockFragment implements
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
            @Override
+           public int getSwipeDirs(@NonNull RecyclerView recyclerView,
+                                   @NonNull RecyclerView.ViewHolder viewHolder) {
+               if (viewHolder instanceof AlarmItemViewHolder) {
+                   AlarmItemHolder itemHolder = ((AlarmItemViewHolder) viewHolder).getItemHolder();
+                   if (itemHolder.item.locked) {
+                       return 0;
+                   }
+               }
+               return super.getSwipeDirs(recyclerView, viewHolder);
+           }
+
+           @Override
            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
                                  @NonNull RecyclerView.ViewHolder target) {
 
@@ -343,9 +355,17 @@ public final class AlarmClockFragment extends DeskClockFragment implements
            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                AlarmItemViewHolder alarmHolder = (AlarmItemViewHolder) viewHolder;
                AlarmItemHolder itemHolder = alarmHolder.getItemHolder();
+               final Alarm alarm = itemHolder.item;
+
+               if (alarm.locked) {
+                   // Snap the item back without deleting
+                   mItemAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                   android.widget.Toast.makeText(mContext,
+                           R.string.alarm_is_locked_toast, android.widget.Toast.LENGTH_SHORT).show();
+                   return;
+               }
 
                removeItem(itemHolder);
-               final Alarm alarm = itemHolder.item;
                Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
                mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
            }
