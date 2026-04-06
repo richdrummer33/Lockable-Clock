@@ -317,7 +317,8 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         missedAlarmRepeatLimit = c.getInt(MISSED_ALARM_REPEAT_LIMIT_INDEX);
         crescendoDuration = c.getInt(CRESCENDO_DURATION_INDEX);
         alarmVolume = c.getInt(ALARM_VOLUME_INDEX);
-        locked = c.getColumnCount() > LOCKED_INDEX && c.getInt(LOCKED_INDEX) == 1;
+        final int lockedColIndex = c.getColumnIndex(LOCKED);
+        locked = lockedColIndex >= 0 && c.getInt(lockedColIndex) == 1;
 
         if (c.getColumnCount() == ALARM_JOIN_INSTANCE_COLUMN_COUNT) {
             instanceState = c.getInt(INSTANCE_STATE_INDEX);
