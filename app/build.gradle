@@ -29,14 +29,8 @@ android {
                 storePassword = keystoreProperties["storePassword"]
                 keyAlias = keystoreProperties["keyAlias"]
                 keyPassword = keystoreProperties["keyPassword"]
-            } else if (System.getenv("KEYSTORE_BASE64")) {
-                // CI: keystore decoded and placed at project root by the workflow
-                storeFile = file("$rootDir/keystore.jks")
-                storePassword = System.getenv("KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("KEY_ALIAS")
-                keyPassword = System.getenv("KEY_PASSWORD")
             } else {
-                println "Keystore properties file not found and no env vars set. No signing configuration will be applied."
+                println "Keystore properties file not found. No signing configuration will be applied."
             }
         }
     }
@@ -51,7 +45,7 @@ android {
         release {
             debuggable = false
             manifestPlaceholders = [appName: "@string/app_label"]
-            if (keystorePropertiesFile.exists() || System.getenv("KEYSTORE_BASE64")) {
+            if (keystorePropertiesFile.exists()) {
                 signingConfig = signingConfigs.findByName("release")
             } else {
                 signingConfig = null

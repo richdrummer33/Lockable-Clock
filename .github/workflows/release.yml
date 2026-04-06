@@ -8,6 +8,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -28,15 +30,14 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Decode keystore (if signing secrets provided)
-        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
 
       - name: Write keystore.properties (if signing secrets provided)
-        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
