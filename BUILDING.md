@@ -83,8 +83,8 @@ Steps:
 1. Check out the repository
 2. Set up JDK 17 (Temurin)
 3. Cache Gradle dependencies
-4. Run `./gradlew assembleDebug`
-5. Upload the debug APK as a workflow artifact (retained 14 days)
+4. Run `./gradlew assembleDebug` — uploads debug APK artifact (retained 14 days)
+5. Run `./gradlew assembleRelease` — uploads unsigned release APK artifact (retained 14 days)
 
 Download built APKs from the **Actions** tab → select the workflow run → **Artifacts**.
 
@@ -92,13 +92,15 @@ Download built APKs from the **Actions** tab → select the workflow run → **A
 
 Triggers on:
 - Git tag push matching `v*` (e.g., `v1.0.0`, `v2.1.3`)
+- Manual dispatch via the **Actions** tab (**Run workflow** button)
 
 Steps:
 1. Check out the repository
 2. Set up JDK 17
 3. Optionally decode and configure keystore from GitHub Secrets
 4. Run `./gradlew assembleRelease`
-5. Create a GitHub Release with the APK attached and auto-generated release notes
+5. Upload the release APK as a downloadable artifact (retained 14 days)
+6. *(Tag push only)* Create a GitHub Release with the APK attached and auto-generated release notes
 
 #### Required GitHub Secrets for signed releases
 
