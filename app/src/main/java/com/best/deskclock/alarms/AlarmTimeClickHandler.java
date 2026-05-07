@@ -265,6 +265,14 @@ public final class AlarmTimeClickHandler implements OnTimeSetListener {
         LOGGER.d("Toggling alarm lock to " + alarm.locked);
     }
 
+    public void onSetFromCalendarEventClicked() {
+        new AlertDialog.Builder(mContext)
+                .setTitle(R.string.set_from_calendar_event)
+                .setMessage(R.string.calendar_feature_placeholder_message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
+
     public void onDuplicateClicked(AlarmItemHolder itemHolder) {
         final Alarm alarm = itemHolder.item;
         mAlarmUpdateHandler.asyncAddAlarm(alarm);

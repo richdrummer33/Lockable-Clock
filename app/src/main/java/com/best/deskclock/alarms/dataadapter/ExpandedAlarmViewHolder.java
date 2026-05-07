@@ -71,6 +71,7 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
     private final LinearLayout repeatDays;
     private final CompoundButton[] dayButtons = new CompoundButton[7];
     private final TextView scheduleAlarm;
+    private final TextView setFromCalendarEvent;
     private final TextView selectedDate;
     private final ImageView addDate;
     private final ImageView removeDate;
@@ -108,6 +109,7 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
         editLabel = itemView.findViewById(R.id.edit_label);
         repeatDays = itemView.findViewById(R.id.repeat_days);
         scheduleAlarm = itemView.findViewById(R.id.schedule_alarm);
+        setFromCalendarEvent = itemView.findViewById(R.id.set_from_calendar_event);
         selectedDate = itemView.findViewById(R.id.selected_date);
         addDate = itemView.findViewById(R.id.add_date);
         removeDate = itemView.findViewById(R.id.remove_date);
@@ -185,6 +187,10 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
         // Remove date handler
         removeDate.setOnClickListener(v ->
                 getAlarmTimeClickHandler().onRemoveDateClicked(getItemHolder().item));
+
+        // Calendar placeholder handler
+        setFromCalendarEvent.setOnClickListener(v ->
+                getAlarmTimeClickHandler().onSetFromCalendarEventClicked());
 
         // Ringtone editor handler
         ringtone.setOnClickListener(v ->
@@ -281,6 +287,7 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
         bindEditLabel(context, alarm);
         bindDaysOfWeekButtons(alarm, context);
         bindScheduleAlarm();
+        bindSetFromCalendarEvent();
         bindSelectedDate(alarm);
         bindRingtone(context, alarm);
         bindVibrator(context, alarm);
@@ -310,6 +317,7 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
         editLabel.setAlpha(labelIsEmpty || alarm.enabled ? 1f : editLabel.getAlpha());
         repeatDays.setAlpha(1f);
         scheduleAlarm.setAlpha(1f);
+        setFromCalendarEvent.setAlpha(1f);
         selectedDate.setAlpha(1f);
         addDate.setAlpha(1f);
         removeDate.setAlpha(1f);
@@ -525,6 +533,10 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
 
     private void bindScheduleAlarm() {
         scheduleAlarm.setTypeface(mGeneralTypeface);
+    }
+
+    private void bindSetFromCalendarEvent() {
+        setFromCalendarEvent.setTypeface(mGeneralTypeface);
     }
 
     private void bindSelectedDate(Alarm alarm) {
@@ -752,6 +764,9 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
         final Animator scheduleAlarmAnimation = ObjectAnimator.ofFloat(scheduleAlarm, View.ALPHA, 0f)
                 .setDuration(shortDuration);
 
+        final Animator setFromCalendarEventAnimation = ObjectAnimator.ofFloat(setFromCalendarEvent, View.ALPHA, 0f)
+                .setDuration(shortDuration);
+
         final Animator selectedDateAnimation = ObjectAnimator.ofFloat(selectedDate, View.ALPHA, 0f)
                 .setDuration(shortDuration);
 
@@ -906,6 +921,8 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
 
         scheduleAlarmAnimation.setStartDelay(startDelay);
 
+        setFromCalendarEventAnimation.setStartDelay(startDelay);
+
         selectedDateAnimation.setStartDelay(startDelay);
 
         addDateAnimation.setStartDelay(startDelay);
@@ -922,7 +939,7 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
                 deleteOccasionalAlarmAfterUseAnimation, vibrateAnimation, ringtoneAnimation,
                 deleteAnimation, duplicateAnimation, lockAlarmAnimation, dismissAnimation,
                 switchAnimator, clockAnimator, ellipseAnimator, scheduleAlarmAnimation,
-                selectedDateAnimation, addDateAnimation, removeDateAnimation,
+                setFromCalendarEventAnimation, selectedDateAnimation, addDateAnimation, removeDateAnimation,
                 snoozeDurationTitleAnimation, snoozeDurationValueAnimation,
                 crescendoDurationTitleAnimation,
                 crescendoDurationValueAnimation, silenceAfterDurationTitleAnimation,
@@ -960,6 +977,7 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
         onOff.setVisibility(INVISIBLE);
         daysOfWeek.setVisibility(INVISIBLE);
         scheduleAlarm.setAlpha(0f);
+        setFromCalendarEvent.setAlpha(0f);
         selectedDate.setAlpha(0f);
         addDate.setAlpha(0f);
         removeDate.setAlpha(0f);
@@ -1004,6 +1022,9 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
                 .setDuration(longDuration);
 
         final Animator scheduleAlarmAnimation = ObjectAnimator.ofFloat(scheduleAlarm, View.ALPHA, 1f)
+                .setDuration(longDuration);
+
+        final Animator setFromCalendarEventAnimation = ObjectAnimator.ofFloat(setFromCalendarEvent, View.ALPHA, 1f)
                 .setDuration(longDuration);
 
         final Animator selectedDateAnimation = ObjectAnimator.ofFloat(selectedDate, View.ALPHA, 1f)
@@ -1107,6 +1128,8 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
 
         scheduleAlarmAnimation.setStartDelay(startDelay);
 
+        setFromCalendarEventAnimation.setStartDelay(startDelay);
+
         selectedDateAnimation.setStartDelay(startDelay);
 
         addDateAnimation.setStartDelay(startDelay);
@@ -1182,7 +1205,7 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
                 editLabelAnimation, editLabelIconAnimation, flashAnimation, vibrateAnimation,
                 deleteOccasionalAlarmAfterUseAnimation, ringtoneAnimation, deleteAnimation,
                 duplicateAnimation, lockAlarmAnimation, dismissAnimation, arrowAnimation,
-                scheduleAlarmAnimation, selectedDateAnimation, addDateAnimation, removeDateAnimation,
+                scheduleAlarmAnimation, setFromCalendarEventAnimation, selectedDateAnimation, addDateAnimation, removeDateAnimation,
                 snoozeDurationTitleAnimation, snoozeDurationValueAnimation,
                 crescendoDurationTitleAnimation, crescendoDurationValueAnimation,
                 silenceAfterDurationTitleAnimation, silenceAfterDurationValueAnimation,

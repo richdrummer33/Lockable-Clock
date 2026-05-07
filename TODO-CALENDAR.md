@@ -52,3 +52,10 @@ To implement this feature cleanly:
    - Create alarm with `alarm.label = event.title` and `alarm.locked = true`
 
 5. No background sync, no persistent calendar link required — purely one-shot.
+
+## Implementation Notes Confirmed
+
+- Use Android system `CalendarContract` provider (shared database across calendar apps/accounts).
+- Prefer `CalendarContract.Instances` for querying upcoming events because it expands recurring events.
+- Required permission: `READ_CALENDAR` (runtime grant required).
+- Query a bounded window (for example next 24h/48h/30d), let user pick event + offset, then create a normal alarm.
