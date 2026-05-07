@@ -99,8 +99,8 @@ public final class LockpickMinigameDialog extends DialogFragment {
         private static final long TOTAL_MS    = 3500L;
         private static final float[] FREQS    = {1.2f, 1.5f, 1.8f};
         private static final float[] PHASES   = {0.0f, 0.3f, 0.7f};
-        /** Band width as fraction of pin travel for each pin. */
-        private static final float[] BANDS    = {0.14f, 0.12f, 0.10f};
+        /** Band width as fraction of pin travel for each pin — narrower on later pins. */
+        private static final float[] PIN_BAND_WIDTHS = {0.14f, 0.12f, 0.10f};
         /** y position (0..1) where shear line sits. */
         private static final float SHEAR_Y    = 0.85f;
 
@@ -269,7 +269,7 @@ public final class LockpickMinigameDialog extends DialogFragment {
 
             // Get current pin y
             float pinY = getPinTopY(nextPin, currentTime());
-            boolean inBand = Math.abs(pinY - mShearLineY) < (mPinTravelBottom - mPinTravelTop) * BANDS[nextPin] / 2f;
+            boolean inBand = Math.abs(pinY - mShearLineY) < (mPinTravelBottom - mPinTravelTop) * PIN_BAND_WIDTHS[nextPin] / 2f;
 
             if (inBand) {
                 mPinSet[nextPin] = true;

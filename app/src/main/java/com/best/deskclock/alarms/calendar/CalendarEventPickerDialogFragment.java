@@ -283,7 +283,7 @@ public final class CalendarEventPickerDialogFragment extends DialogFragment {
             int colAllDay = cursor.getColumnIndexOrThrow(CalendarContract.Instances.ALL_DAY);
 
             while (cursor.moveToNext()) {
-                if (cursor.getInt(colAllDay) != 0) continue; // skip all-day events
+                if (cursor.getInt(colAllDay) != 0) continue; // skip all-day events: they have no specific start time for alarm offset calculation
                 String title = cursor.getString(colTitle);
                 if (title == null || title.isEmpty()) continue;
                 result.add(new CalendarEvent(

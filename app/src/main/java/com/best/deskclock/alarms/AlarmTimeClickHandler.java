@@ -319,7 +319,10 @@ public final class AlarmTimeClickHandler implements OnTimeSetListener {
                     mSelectedAlarm.minutes = minute;
                     // Clear recurring days so the date-based alarm fires once
                     mSelectedAlarm.daysOfWeek = Weekdays.NONE;
-                    mSelectedAlarm.locked = true; // lock it so it isn't accidentally dismissed
+                    // Lock the alarm so it can't be dismissed accidentally before the event.
+                    // To disable or delete it the user must complete the appropriate minigame,
+                    // giving a deliberate friction barrier consistent with the rest of the app.
+                    mSelectedAlarm.locked = true;
 
                     mAlarmUpdateHandler.asyncUpdateAlarm(mSelectedAlarm, true, false);
                     LOGGER.d("Alarm set from calendar event: " + event.title);
