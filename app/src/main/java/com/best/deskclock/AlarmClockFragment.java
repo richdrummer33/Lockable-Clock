@@ -251,6 +251,18 @@ public final class AlarmClockFragment extends DeskClockFragment implements
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
            @Override
+           public int getSwipeDirs(@NonNull RecyclerView recyclerView,
+                                   @NonNull RecyclerView.ViewHolder viewHolder) {
+               if (viewHolder instanceof AlarmItemViewHolder) {
+                   AlarmItemHolder itemHolder = ((AlarmItemViewHolder) viewHolder).getItemHolder();
+                   if (itemHolder.item.locked) {
+                       return 0;
+                   }
+               }
+               return super.getSwipeDirs(recyclerView, viewHolder);
+           }
+
+           @Override
            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
                                  @NonNull RecyclerView.ViewHolder target) {
 
@@ -340,15 +352,15 @@ public final class AlarmClockFragment extends DeskClockFragment implements
            }
 
            @Override
-           public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-               AlarmItemViewHolder alarmHolder = (AlarmItemViewHolder) viewHolder;
-               AlarmItemHolder itemHolder = alarmHolder.getItemHolder();
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                AlarmItemViewHolder alarmHolder = (AlarmItemViewHolder) viewHolder;
+                AlarmItemHolder itemHolder = alarmHolder.getItemHolder();
+                final Alarm alarm = itemHolder.item;
 
-               removeItem(itemHolder);
-               final Alarm alarm = itemHolder.item;
-               Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
-               mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
-           }
+                removeItem(itemHolder);
+                Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
+                mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
+            }
         });
 
         if (ThemeUtils.areSystemAnimationsDisabled(mContext)) {

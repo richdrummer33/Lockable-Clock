@@ -97,6 +97,21 @@
         app:layout_constraintBottom_toBottomOf="@id/days_of_week"
         tools:ignore="TouchTargetSizeCheck" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/lock_alarm"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_lock_open"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
+        android:focusable="true"
+        android:text="@string/alarm_lock"
+        app:drawableTint="?attr/colorOnSurfaceVariant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/schedule_alarm" />
     <!-- Day buttons are added programmatically -->
     <LinearLayout
         android:id="@+id/repeat_days"
@@ -121,6 +136,22 @@
         app:drawableTint="?attr/colorOnSurfaceVariant"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/repeat_days" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/set_from_calendar_event"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:focusable="true"
+        android:drawableStart="@drawable/ic_calendar_clock"
+        android:drawablePadding="10dp"
+        android:text="@string/set_from_calendar_event"
+        android:gravity="center_vertical"
+        app:drawableTint="?attr/colorOnSurfaceVariant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lock_alarm" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/selected_date"
@@ -178,7 +209,7 @@
         android:scrollHorizontally="true"
         android:singleLine="true"
         app:drawableTint="?attr/colorOnSurfaceVariant"
-        app:layout_constraintTop_toBottomOf="@id/schedule_alarm"
+        app:layout_constraintTop_toBottomOf="@id/set_from_calendar_event"
         tools:text="Standard (Hassium)" />
 
     <com.google.android.material.checkbox.MaterialCheckBox

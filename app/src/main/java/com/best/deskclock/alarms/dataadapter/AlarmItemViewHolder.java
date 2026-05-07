@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.best.deskclock.ItemAdapter;
 import com.best.deskclock.ItemAnimator;
@@ -68,6 +69,7 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
     public final TextView daysOfWeek;
     public final TextView preemptiveDismissButton;
     public final View bottomPaddingView;
+    public final ImageView lockIndicator;
     public final Typeface mGeneralTypeface;
     public final Typeface mGeneralBoldTypeface;
 
@@ -89,6 +91,7 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
         daysOfWeek = itemView.findViewById(R.id.days_of_week);
         preemptiveDismissButton = itemView.findViewById(R.id.preemptive_dismiss_button);
         bottomPaddingView = itemView.findViewById(R.id.bottom_padding_view);
+        lockIndicator = itemView.findViewById(R.id.lock_indicator);
 
         int rippleColor = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorControlHighlight, Color.BLACK);
         RippleDrawable rippleDrawable = new RippleDrawable(ColorStateList.valueOf(rippleColor),
@@ -103,8 +106,17 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
         });
 
         // On/Off button handler
-        onOff.setOnCheckedChangeListener((compoundButton, checked) ->
-                getItemHolder().getAlarmTimeClickHandler().setAlarmEnabled(getItemHolder().item, checked));
+        onOff.setOnCheckedChangeListener((compoundButton, checked) -> {
+            final Alarm alarm = getItemHolder().item;
+            if (alarm.locked) {
+                // Revert the change and show toast
+                compoundButton.setChecked(!checked);
+                Toast.makeText(compoundButton.getContext(),
+                        R.string.alarm_is_locked_toast, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            getItemHolder().getAlarmTimeClickHandler().setAlarmEnabled(alarm, checked);
+        });
 
         // Preemptive dismiss button handler
         preemptiveDismissButton.setOnClickListener(v -> {
@@ -126,6 +138,7 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
         bindRepeatText(context, alarm, alarmInstance);
         bindPreemptiveDismissButton(context, alarm, alarmInstance);
         bindAnnotations(alarm);
+        bindLockIndicator(alarm);
 
         itemView.setContentDescription(clock.getText() + " " + alarm.getLabelOrDefault(context));
     }
@@ -134,6 +147,7 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
         if (onOff.isChecked() != alarm.enabled) {
             onOff.setChecked(alarm.enabled);
         }
+        onOff.setAlpha(alarm.locked ? CLOCK_DISABLED_ALPHA : CLOCK_ENABLED_ALPHA);
     }
 
     private void bindClock(Alarm alarm) {
@@ -281,5 +295,11 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
 
     protected AlarmTimeClickHandler getAlarmTimeClickHandler() {
         return getItemHolder().getAlarmTimeClickHandler();
+    }
+
+    private void bindLockIndicator(Alarm alarm) {
+        if (lockIndicator != null) {
+            lockIndicator.setVisibility(alarm.locked ? View.VISIBLE : View.GONE);
+        }
     }
 }
