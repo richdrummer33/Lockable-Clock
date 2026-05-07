@@ -352,23 +352,15 @@ public final class AlarmClockFragment extends DeskClockFragment implements
            }
 
            @Override
-           public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-               AlarmItemViewHolder alarmHolder = (AlarmItemViewHolder) viewHolder;
-               AlarmItemHolder itemHolder = alarmHolder.getItemHolder();
-               final Alarm alarm = itemHolder.item;
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                AlarmItemViewHolder alarmHolder = (AlarmItemViewHolder) viewHolder;
+                AlarmItemHolder itemHolder = alarmHolder.getItemHolder();
+                final Alarm alarm = itemHolder.item;
 
-               if (alarm.locked) {
-                   // Snap the item back without deleting
-                   mItemAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
-                   android.widget.Toast.makeText(mContext,
-                           R.string.alarm_is_locked_toast, android.widget.Toast.LENGTH_SHORT).show();
-                   return;
-               }
-
-               removeItem(itemHolder);
-               Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
-               mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
-           }
+                removeItem(itemHolder);
+                Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
+                mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
+            }
         });
 
         if (ThemeUtils.areSystemAnimationsDisabled(mContext)) {
