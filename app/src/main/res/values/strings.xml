@@ -47,8 +47,40 @@
     <string name="locked_alarm_delete_confirmation">This alarm is locked. Unlock and delete?</string>
     <!-- Label for creating an alarm from an upcoming calendar event -->
     <string name="set_from_calendar_event">Set from calendar event</string>
-    <!-- Placeholder message for calendar-based alarm creation -->
-    <string name="calendar_feature_placeholder_message">Calendar event integration is planned. It will use Android CalendarContract (READ_CALENDAR + Instances) with an upcoming-events picker and offset selection.</string>
+    <!-- Title for calendar event picker dialog -->
+    <string name="calendar_event_picker_title">Pick a calendar event</string>
+    <!-- Hint text for calendar event search field -->
+    <string name="calendar_event_search_hint">Search events…</string>
+    <!-- Empty state for calendar event picker -->
+    <string name="calendar_no_events">No upcoming events found</string>
+    <!-- Calendar permission rationale message -->
+    <string name="calendar_permission_rationale">Calendar access is needed to show your upcoming events so you can set an alarm from one.</string>
+    <!-- Shown when calendar permission was denied -->
+    <string name="calendar_permission_denied">Calendar permission denied. Grant it in app settings.</string>
+    <!-- Go to settings action label -->
+    <string name="go_to_settings">Settings</string>
+    <!-- Title for alarm offset picker dialog -->
+    <string name="calendar_offset_title">Alarm offset</string>
+    <!-- Subtitle pattern for offset selection: "30 min before event" -->
+    <string name="calendar_offset_before">%d min before event</string>
+    <!-- Subtitle pattern for offset at start: "At event start" -->
+    <string name="calendar_offset_at_start">At event start</string>
+    <!-- Subtitle pattern for offset after start: "15 min after event start" -->
+    <string name="calendar_offset_after">%d min after event start</string>
+    <!-- Minigame: smash glass title -->
+    <string name="minigame_smash_glass_title">EMERGENCY</string>
+    <!-- Minigame: smash glass instruction -->
+    <string name="minigame_smash_glass_hold">Hold to charge</string>
+    <!-- Minigame: lockpick title shown in dialog -->
+    <string name="minigame_lockpick_subtitle">Pick the lock to delete</string>
+    <!-- Minigame: lockpick fail message -->
+    <string name="minigame_lockpick_fail">Lock held.</string>
+    <!-- Minigame: bomb defusal instruction -->
+    <string name="minigame_bomb_hint_label">HINT</string>
+    <!-- Minigame: bomb fail message -->
+    <string name="minigame_bomb_fail">Defused itself.</string>
+    <!-- Minigame: bomb correct cut message -->
+    <string name="minigame_bomb_cut">Wire cut.</string>
     <!-- Dialog label to choose a new background image. -->
     <string name="label_new_image">New image</string>
     <!-- Dialog label to choose a new font. -->

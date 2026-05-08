@@ -25,7 +25,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.best.deskclock.ItemAdapter;
 import com.best.deskclock.ItemAnimator;
@@ -109,10 +108,9 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
         onOff.setOnCheckedChangeListener((compoundButton, checked) -> {
             final Alarm alarm = getItemHolder().item;
             if (alarm.locked) {
-                // Revert the change and show toast
+                // Revert the toggle visually first, then let the Smash Glass minigame decide
                 compoundButton.setChecked(!checked);
-                Toast.makeText(compoundButton.getContext(),
-                        R.string.alarm_is_locked_toast, Toast.LENGTH_SHORT).show();
+                getItemHolder().getAlarmTimeClickHandler().onLockedAlarmToggle(alarm, checked);
                 return;
             }
             getItemHolder().getAlarmTimeClickHandler().setAlarmEnabled(alarm, checked);

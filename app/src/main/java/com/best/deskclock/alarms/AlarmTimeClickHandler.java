@@ -43,7 +43,11 @@ import com.best.deskclock.LabelDialogFragment;
 import com.best.deskclock.R;
 import com.best.deskclock.VibrationPatternDialogFragment;
 import com.best.deskclock.VolumeCrescendoDurationDialogFragment;
+import com.best.deskclock.alarms.calendar.CalendarEventPickerDialogFragment;
 import com.best.deskclock.alarms.dataadapter.AlarmItemHolder;
+import com.best.deskclock.alarms.minigame.BombDefusalMinigameDialog;
+import com.best.deskclock.alarms.minigame.LockpickMinigameDialog;
+import com.best.deskclock.alarms.minigame.SmashGlassMinigameDialog;
 import com.best.deskclock.data.SettingsDAO;
 import com.best.deskclock.data.Weekdays;
 import com.best.deskclock.events.Events;
@@ -233,19 +237,23 @@ public final class AlarmTimeClickHandler implements OnTimeSetListener {
     public void onDeleteClicked(AlarmItemHolder itemHolder) {
         final Alarm alarm = itemHolder.item;
         if (alarm.locked) {
-            new androidx.appcompat.app.AlertDialog.Builder(mContext)
-                    .setMessage(R.string.locked_alarm_delete_confirmation)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        alarm.locked = false;
-                        if (mFragment instanceof AlarmClockFragment) {
-                            ((AlarmClockFragment) mFragment).removeItem(itemHolder);
-                        }
-                        Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
-                        mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
-                        LOGGER.d("Deleting locked alarm after confirmation.");
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show();
+            // Choose minigame tier based on alarm type:
+            // recurring series → Bomb Defusal (heavy), single/one-shot → Lockpick (mid)
+            Runnable deleteAction = () -> {
+                alarm.locked = false;
+                if (mFragment instanceof AlarmClockFragment) {
+                    ((AlarmClockFragment) mFragment).removeItem(itemHolder);
+                }
+                Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
+                mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
+                LOGGER.d("Deleting locked alarm after minigame success.");
+            };
+            if (alarm.daysOfWeek.isRepeating()) {
+                int hintIndex = (alarm.minutes % 10) % 4;
+                BombDefusalMinigameDialog.show(mFragment.getParentFragmentManager(), deleteAction, hintIndex);
+            } else {
+                LockpickMinigameDialog.show(mFragment.getParentFragmentManager(), deleteAction);
+            }
             return;
         }
         if (mFragment instanceof AlarmClockFragment) {
@@ -254,6 +262,21 @@ public final class AlarmTimeClickHandler implements OnTimeSetListener {
         Events.sendAlarmEvent(R.string.action_delete, R.string.label_deskclock);
         mAlarmUpdateHandler.asyncDeleteAlarm(alarm);
         LOGGER.d("Deleting alarm.");
+    }
+
+    /**
+     * Called when the user tries to toggle a LOCKED alarm. Shows the Smash Glass minigame;
+     * if the user succeeds the alarm enabled state is updated.
+     *
+     * @param alarm      the locked alarm
+     * @param newState   the requested new enabled state
+     */
+    public void onLockedAlarmToggle(Alarm alarm, boolean newState) {
+        SmashGlassMinigameDialog.show(mFragment.getParentFragmentManager(), () -> {
+            alarm.locked = false;
+            setAlarmEnabled(alarm, newState);
+            LOGGER.d("Locked alarm toggled after Smash Glass success.");
+        });
     }
 
     public void onLockClicked(Alarm alarm) {
@@ -265,13 +288,48 @@ public final class AlarmTimeClickHandler implements OnTimeSetListener {
         LOGGER.d("Toggling alarm lock to " + alarm.locked);
     }
 
-    public void onSetFromCalendarEventClicked() {
-        new AlertDialog.Builder(mContext)
-                .setTitle(R.string.set_from_calendar_event)
-                .setMessage(R.string.calendar_feature_placeholder_message)
-                .setPositiveButton(android.R.string.ok, null)
-                .show();
+    /**
+     * Launches the real calendar event picker. The user picks an upcoming event and an
+     * offset; the result is used to set the alarm time and label.
+     *
+     * @param alarm the alarm to be configured from the calendar event
+     */
+    public void onSetFromCalendarEventClicked(Alarm alarm) {
+        mSelectedAlarm = alarm;
+        CalendarEventPickerDialogFragment.show(
+                mFragment.getParentFragmentManager(),
+                alarm,
+                (event, offsetMinutes) -> {
+                    // Compute target time = event start + offset
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(event.startMillis + (long) offsetMinutes * 60 * 1000);
+
+                    int hour   = cal.get(Calendar.HOUR_OF_DAY);
+                    int minute = cal.get(Calendar.MINUTE);
+                    int year   = cal.get(Calendar.YEAR);
+                    int month  = cal.get(Calendar.MONTH);
+                    int day    = cal.get(Calendar.DAY_OF_MONTH);
+
+                    // Populate the alarm
+                    mSelectedAlarm.label  = event.title;
+                    mSelectedAlarm.year   = year;
+                    mSelectedAlarm.month  = month;
+                    mSelectedAlarm.day    = day;
+                    mSelectedAlarm.hour   = hour;
+                    mSelectedAlarm.minutes = minute;
+                    // Clear recurring days so the date-based alarm fires once
+                    mSelectedAlarm.daysOfWeek = Weekdays.NONE;
+                    // Lock the alarm so it can't be dismissed accidentally before the event.
+                    // To disable or delete it the user must complete the appropriate minigame,
+                    // giving a deliberate friction barrier consistent with the rest of the app.
+                    mSelectedAlarm.locked = true;
+
+                    mAlarmUpdateHandler.asyncUpdateAlarm(mSelectedAlarm, true, false);
+                    LOGGER.d("Alarm set from calendar event: " + event.title);
+                    mSelectedAlarm = null;
+                });
     }
+
 
     public void onDuplicateClicked(AlarmItemHolder itemHolder) {
         final Alarm alarm = itemHolder.item;

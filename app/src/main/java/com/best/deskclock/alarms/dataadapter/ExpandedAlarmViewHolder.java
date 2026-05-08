@@ -188,9 +188,9 @@ public final class ExpandedAlarmViewHolder extends AlarmItemViewHolder {
         removeDate.setOnClickListener(v ->
                 getAlarmTimeClickHandler().onRemoveDateClicked(getItemHolder().item));
 
-        // Calendar placeholder handler
+        // Calendar event picker handler
         setFromCalendarEvent.setOnClickListener(v ->
-                getAlarmTimeClickHandler().onSetFromCalendarEventClicked());
+                getAlarmTimeClickHandler().onSetFromCalendarEventClicked(getItemHolder().item));
 
         // Ringtone editor handler
         ringtone.setOnClickListener(v ->
