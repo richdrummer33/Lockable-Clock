@@ -181,7 +181,7 @@ public final class CalendarEventPickerDialogFragment extends DialogFragment {
                 (d, w) -> dismiss(),
                 null, null,
                 null,
-                CustomDialog.SoftInputMode.HIDE_KEYBOARD
+                CustomDialog.SoftInputMode.NONE
         );
 
         return mCurrentDialog;
